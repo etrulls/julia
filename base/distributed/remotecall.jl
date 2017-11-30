@@ -52,7 +52,7 @@ function test_existing_ref(r::AbstractRemoteRef)
     end
 
     client_refs[r] = nothing
-    finalizer(finalize_ref, r)
+    finalizer(r, finalize_ref)
     return r
 end
 
@@ -60,7 +60,7 @@ function finalize_ref(r::AbstractRemoteRef)
     if r.where > 0 # Handle the case of the finalizer having been called manually
         if islocked(client_refs)
             # delay finalizer for later, when it's not already locked
-            finalizer(finalize_ref, r)
+            finalizer(r, finalize_ref)
             return nothing
         end
         delete!(client_refs, r)
