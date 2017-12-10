@@ -2987,6 +2987,9 @@ end
 @deprecate_moved lcfirst "Unicode" true true
 @deprecate_moved ucfirst "Unicode" true true
 
+# PR #25011
+@deprecate push!(env::EnvDict, k::AbstractString, v) push!(env, k=>v)
+
 # END 0.7 deprecations
 
 # BEGIN 1.0 deprecations
