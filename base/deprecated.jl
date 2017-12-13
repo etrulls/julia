@@ -536,8 +536,8 @@ function gen_broadcast_body_zpreserving(f::Function, is_first_sparse::Bool)
         op2 = :(val1)
     end
     quote
-        Base.Broadcast.check_broadcast_indices(indices(B), $A1)
-        Base.Broadcast.check_broadcast_indices(indices(B), $A2)
+        Base.Broadcast.check_broadcast_indices(axes(B), $A1)
+        Base.Broadcast.check_broadcast_indices(axes(B), $A2)
 
         nnzB = isempty(B) ? 0 :
                nnz($A1) * div(B.n, ($A1).n) * div(B.m, ($A1).m)
@@ -2995,6 +2995,10 @@ end
 # PR #24999
 @deprecate ind2chr(s::AbstractString, i::Integer) length(s, 1, i)
 @deprecate chr2ind(s::AbstractString, n::Integer) nextind(s, 0, n)
+
+# PR #25057
+@deprecate indices(a) axes(a)
+@deprecate indices(a, d) axes(a, d)
 
 # END 0.7 deprecations
 
