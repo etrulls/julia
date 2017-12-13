@@ -173,6 +173,24 @@ end
     showerror(io, e)
 
 Show a descriptive representation of an exception object.
+
+# Examples
+```jldoctest
+julia> struct MyException <: Exception
+           msg::AbstractString
+       end
+
+julia> function Base.showerror(io::IO, err::MyException)
+           print(io, "MyException: ")
+           print(io, err.msg)
+       end
+
+julia> err = MyException("test exception")
+MyException("test exception")
+
+julia> sprint(showerror, err)
+"MyException: test exception"
+```
 """
 showerror(io::IO, ex) = show(io, ex)
 
