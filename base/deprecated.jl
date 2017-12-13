@@ -2996,6 +2996,10 @@ end
 @deprecate ind2chr(s::AbstractString, i::Integer) length(s, 1, i)
 @deprecate chr2ind(s::AbstractString, n::Integer) nextind(s, 0, n)
 
+# issue #25016
+@deprecate lpad(s, n::Integer, p) lpad(string(s), n, string(p))
+@deprecate rpad(s, n::Integer, p) rpad(string(s), n, string(p))
+
 # END 0.7 deprecations
 
 # BEGIN 1.0 deprecations
