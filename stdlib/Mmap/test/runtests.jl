@@ -4,7 +4,7 @@ using Test, Mmap
 
 file = tempname()
 write(file, "Hello World\n")
-t = b"Hello World"
+t = Vector{UInt8}("Hello World")
 @test Mmap.mmap(file, Array{UInt8,3}, (11,1,1)) == reshape(t,(11,1,1))
 gc(); gc()
 @test Mmap.mmap(file, Array{UInt8,3}, (1,11,1)) == reshape(t,(1,11,1))
@@ -18,7 +18,7 @@ gc(); gc()
 gc(); gc()
 @test Mmap.mmap(file, Array{UInt8,2}, (0,12)) == Array{UInt8}(uninitialized, (0,0))
 m = Mmap.mmap(file, Array{UInt8,3}, (1,2,1))
-@test m == reshape(b"He",(1,2,1))
+@test m == reshape(Vector{UInt8}("He"),(1,2,1))
 finalize(m); m=nothing; gc()
 
 # constructors
@@ -52,7 +52,7 @@ s = open(f->f,file,"w")
 @test Mmap.mmap(file,Vector{UInt8},0) == Vector{UInt8}()
 s = open(file, "r+")
 m = Mmap.mmap(s,Vector{UInt8},12)
-m[:] = b"Hello World\n"
+m[:] = Vector{UInt8}("Hello World\n")
 Mmap.sync!(m)
 close(s); finalize(m); m=nothing; gc()
 @test open(x->read(x, String),file) == "Hello World\n"
@@ -121,10 +121,10 @@ write(file, "Hello World\n")
 s = open(file, "r")
 @test isreadonly(s) == true
 c = Mmap.mmap(s, Vector{UInt8}, (11,))
-@test c == b"Hello World"
+@test c == Vector{UInt8}("Hello World")
 finalize(c); c=nothing; gc()
 c = Mmap.mmap(s, Vector{UInt8}, (UInt16(11),))
-@test c == b"Hello World"
+@test c == Vector{UInt8}("Hello World")
 finalize(c); c=nothing; gc()
 @test_throws ArgumentError Mmap.mmap(s, Vector{UInt8}, (Int16(-11),))
 @test_throws ArgumentError Mmap.mmap(s, Vector{UInt8}, (typemax(UInt),))
@@ -142,18 +142,18 @@ close(s)
 finalize(c); c=nothing; gc()
 
 c = Mmap.mmap(file)
-@test c == b"Hellx World\n"
+@test c == Vector{UInt8}("Hellx World\n")
 finalize(c); c=nothing; gc()
 c = Mmap.mmap(file, Vector{UInt8}, 3)
-@test c == b"Hel"
+@test c == Vector{UInt8}("Hel")
 finalize(c); c=nothing; gc()
 s = open(file, "r")
 c = Mmap.mmap(s, Vector{UInt8}, 6)
-@test c == b"Hellx "
+@test c == Vector{UInt8}("Hellx ")
 close(s)
 finalize(c); c=nothing; gc()
 c = Mmap.mmap(file, Vector{UInt8}, 5, 6)
-@test c == b"World"
+@test c == Vector{UInt8}("World")
 finalize(c); c=nothing; gc()
 
 s = open(file, "w")
@@ -162,7 +162,7 @@ close(s)
 
 # test Mmap.mmap
 m = Mmap.mmap(file)
-tdata = b"Hello World\n"
+tdata = Vector{UInt8}("Hello World\n")
 for i = 1:12
     @test m[i] == tdata[i]
 end
@@ -170,18 +170,18 @@ end
 finalize(m); m=nothing; gc()
 
 m = Mmap.mmap(file,Vector{UInt8},6)
-@test m[1] == b"H"[1]
-@test m[2] == b"e"[1]
-@test m[3] == b"l"[1]
-@test m[4] == b"l"[1]
-@test m[5] == b"o"[1]
-@test m[6] == b" "[1]
+@test m[1] == Vector{UInt8}("H")[1]
+@test m[2] == Vector{UInt8}("e")[1]
+@test m[3] == Vector{UInt8}("l")[1]
+@test m[4] == Vector{UInt8}("l")[1]
+@test m[5] == Vector{UInt8}("o")[1]
+@test m[6] == Vector{UInt8}(" )"[1]
 @test_throws BoundsError m[7]
 finalize(m); m=nothing; gc()
 
 m = Mmap.mmap(file,Vector{UInt8},2,6)
-@test m[1] == b"W"[1]
-@test m[2] == b"o"[1]
+@test m[1] == Vector{UInt8}("W")[1]
+@test m[2] == Vector{UInt8}("o")[1]
 @test_throws BoundsError m[3]
 finalize(m); m = nothing; gc()
 

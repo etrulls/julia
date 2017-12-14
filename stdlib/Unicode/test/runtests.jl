@@ -382,8 +382,10 @@ end
     foobar(ch) = Char(0xd800)
     foobaz(ch) = reinterpret(Char, typemax(UInt32))
     @test_throws ArgumentError map(foomap, GenericString(str))
-    @test map(foobar, GenericString(str)) == String(repeat(b"\ud800", outer=[length(str)]))
-    @test map(foobaz, GenericString(str)) == String(repeat([0xff], outer=[4*length(str)]))
+    @test map(foobar, GenericString(str)) ==
+          String(repeat(Vector{UInt8}("\ud800"), outer=[length(str)]))
+    @test map(foobaz, GenericString(str)) ==
+          String(repeat([0xff], outer=[4*length(str)]))
 
     @test "a".*["b","c"] == ["ab","ac"]
     @test ["b","c"].*"a" == ["ba","ca"]
